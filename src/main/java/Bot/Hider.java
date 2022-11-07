@@ -1,6 +1,6 @@
-package main;
+package Bot;
 
-import Bot.VScript;
+import ClientContext.Teleporter.Teleports;
 import paint.PaintProvider;
 import simple.api.script.Category;
 import simple.api.script.LoopingScript;
@@ -11,25 +11,20 @@ import simple.api.script.ScriptManifest;
 
 public class Hider extends VScript implements LoopingScript {
 	int cmd3;
-	private String[] hides = { "Cowhide", "Snake hide", "Green dragonhide", "Blue dragonhide", "Red dragonhide",
+	private final String[] hides = { "Cowhide", "Snake hide", "Green dragonhide", "Blue dragonhide", "Red dragonhide",
 			"Black dragonhide" };
 
-	int tannedhides;
-	int trips;
-	
-	public Hider() {
-		super("https://i.imgur.com/OH51nfO.png");
-	}
+	private static int tannedhides = 0, trips = 0;
 
-	@Override
-	protected PaintProvider[] getPaintProviders() {
-		return new PaintProvider[] { new PaintProvider("Hides Tanned", () -> tannedhides), new PaintProvider("Trips", () -> trips) };
+	public Hider() {
+		super("https://i.imgur.com/OH51nfO.png", new PaintProvider("Hides Tanned", () -> tannedhides),
+				new PaintProvider("Trips", () -> trips));
 	}
 
 	@Override
 	public void onProcess() {
 		if (!players.inRegion(15159)) {
-			teleports.teleportSkillingIsland();
+			teleports.teleport(Teleports.SKILLINGISLAND);
 		} else if (ctx.inventory.populate().filter(hides).isEmpty() || ctx.bank.bankOpen()) {
 			if (!ctx.bank.bankOpen()) {
 				bank.openBank();
@@ -50,19 +45,25 @@ public class Hider extends VScript implements LoopingScript {
 				ctx.npcs.nextNearest().interact(20);
 				ctx.onCondition(() -> !ctx.widgets.populate().filter(14670).isEmpty());
 			} else {
-				String item = ctx.inventory.populate().filter(hides).next().getName();
-				if (item.equals("Cowhide"))
+				final String item = ctx.inventory.populate().filter(hides).next().getName();
+				if ("Cowhide".equals(item)) {
 					cmd3 = 14793;
-				if (item.equals("Snake hide"))
+				}
+				if ("Snake hide".equals(item)) {
 					cmd3 = 14795;
-				if (item.equals("Green dragonhide"))
+				}
+				if ("Green dragonhide".equals(item)) {
 					cmd3 = 14797;
-				if (item.equals("Blue dragonhide"))
+				}
+				if ("Blue dragonhide".equals(item)) {
 					cmd3 = 14798;
-				if (item.equals("Red dragonhide"))
+				}
+				if ("Red dragonhide".equals(item)) {
 					cmd3 = 14799;
-				if (item.equals("Black dragonhide"))
+				}
+				if ("Black dragonhide".equals(item)) {
 					cmd3 = 14800;
+				}
 				ctx.menuActions.sendAction(315, 169, 0, cmd3);
 				ctx.onCondition(() -> ctx.inventory.populate().filter(hides).isEmpty());
 				trips++;
